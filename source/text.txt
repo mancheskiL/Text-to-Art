@@ -1,0 +1,1 @@
+Then we generate a random integer decimal number by using random.randint() function, which must be in between lower value 0 and upper value  16777215
