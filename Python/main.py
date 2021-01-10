@@ -7,39 +7,44 @@ random.seed(1)
 
 # TODO: initialize by loading desired files
 print('Importing word map')
-word_map = ''
 with open('../source/words_dictionary.json') as f:
-    word_map = json.load(f)
+     word_map = json.load(f)
 
-print('Initializing word map')
-for key, value in word_map.items():
-    word_map[key] = None
+print('Reading previous word map length')
+with open('../source/map_length.txt', 'r') as f:
+     previous_word_map_len = f.read()
+
+if len(word_map) > int(previous_word_map_len):
+    print('Initializing word map')
+    for key, value in word_map.items():
+        word_map[key] = None
+    # set each word to a unique hexadecimal value
+    print('Setting hex values')
+    used_hexes = []
+
+    for key, value in tqdm(word_map.items()):
+        make_hex = True
+        while make_hex:
+            random_num = random.randint(0, 16777215)
+            hex_number = str(hex(random_num))
+            hex_number = '#' + hex_number[2:]
+            if(hex_number not in used_hexes):
+                word_map[key] = hex_number
+                used_hexes.append(hex_number)
+                make_hex = False
+        
+    print('Updating length records')
+    with open('../source/map_length.txt', 'w') as f:
+        f.write(str(len(word_map)))
 
 print('Importing source text')
 with open('../source/text.txt') as f:
     text_file = f.read()
-
-
-# set each word to a unique hexadecimal value
-print('Setting hex values')
-used_hexes = []
-
-for key, value in tqdm(word_map.items()):
-    make_hex = True
-    while make_hex:
-        random_num = random.randint(0, 16777215)
-        hex_number = str(hex(random_num))
-        hex_number = '#' + hex_number[2:]
-        if(hex_number not in used_hexes):
-            word_map[key] = hex_number
-            used_hexes.append(hex_number)
-            make_hex = False
-
 # remove any numeric values from text (i.e. 1, 12, etc)
 print('Cleaning text of numbers')
 text_list = text_file.split()
 no_num_text = []
-for i, item in enumerate(text_list):
+for item in text_list:
     try:
         int(item)
     except:
@@ -47,7 +52,7 @@ for i, item in enumerate(text_list):
 
 # remove any symbols from text (i.e. $, %, &, etc)
 print('Cleaning text of special symbols')
-symbols = ['.', ',', '$', '%', '&', ':', ';', '(', ')', '!', '/']
+# symbols = ['.', ',', '$', '%', '&', ':', ';', '(', ')', '!', '/']
 cleaned_text_list = []
 for item in no_num_text:
     if ('.' or ',' or '$' or '%' or '&' or ':' or ';' or '(' or ')' or '!' or '/') not in item: 
@@ -57,7 +62,6 @@ for item in no_num_text:
 lowercase_list = []
 for item in cleaned_text_list:
     lowercase_list.append(item.lower())
-
 
 # Initialize game
 pygame.init()
@@ -84,9 +88,13 @@ while running:
     for item in lowercase_list:
         color_code = word_map.get(item, '#ffffff')
         color = pygame.Color(color_code)
-        # square = pygame.draw.rect(screen, (255, 100, 50), sq_Rect)
         square = pygame.draw.rect(screen, color, sq_Rect)
         sq_Rect = sq_Rect.move(square_width, 0)
 
     pygame.display.flip()
 pygame.quit()
+
+# TODO: Save word_map to file for cache use later
+print('Artwork closing, updated word map')
+with open('../source/words_dictionary.json', 'w') as f:
+    json.dump(word_map, f)
