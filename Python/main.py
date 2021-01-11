@@ -2,6 +2,27 @@ import pygame
 import json
 import random
 from tqdm import tqdm
+import math
+
+def makePerfectSquareList(text_list):
+    value = None
+    output_list = text_list
+    sr = math.sqrt(len(text_list))
+
+    if (sr - math.floor(sr)) != 0:
+        # add 1 to whatever number is left of decimal after sqrt function
+        # gives the next possible perfect square value
+        value = math.floor(sr) + 1
+
+        # add placeholders to list to make perfect square
+        perfect_square = value * value
+        for _ in range(perfect_square - len(text_list)):
+            output_list.append('luman')
+    else:
+        value = sr
+        output_list = text_list
+    
+    return [value, output_list]
 
 random.seed(1)
 
@@ -55,6 +76,8 @@ print('Cleaning text of special symbols')
 # symbols = ['.', ',', '$', '%', '&', ':', ';', '(', ')', '!', '/']
 cleaned_text_list = []
 for item in no_num_text:
+    print(item)
+    print(('.' or ',' or '$' or '%' or '&' or ':' or ';' or '(' or ')' or '!' or '/') not in item)
     if ('.' or ',' or '$' or '%' or '&' or ':' or ';' or '(' or ')' or '!' or '/') not in item: 
         cleaned_text_list.append(item)
 
@@ -62,6 +85,10 @@ for item in no_num_text:
 lowercase_list = []
 for item in cleaned_text_list:
     lowercase_list.append(item.lower())
+
+
+# calculate nearest perfect square, add placeholder to fill
+root, final_list = makePerfectSquareList(lowercase_list)
 
 # Initialize game
 pygame.init()
@@ -85,8 +112,8 @@ while running:
 
     screen.fill((255, 255, 255))
 
-    for item in lowercase_list:
-        color_code = word_map.get(item, '#ffffff')
+    for item in final_list:
+        color_code = word_map.setdefault(item, '#000000')
         color = pygame.Color(color_code)
         square = pygame.draw.rect(screen, color, sq_Rect)
         sq_Rect = sq_Rect.move(square_width, 0)
@@ -94,7 +121,7 @@ while running:
     pygame.display.flip()
 pygame.quit()
 
-# TODO: Save word_map to file for cache use later
+# Save word_map to file for cache use later
 print('Artwork closing, updated word map')
 with open('../source/words_dictionary.json', 'w') as f:
     json.dump(word_map, f)
