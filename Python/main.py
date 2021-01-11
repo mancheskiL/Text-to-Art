@@ -28,7 +28,7 @@ random.seed(1)
 
 # TODO: initialize by loading desired files
 print('Importing word map')
-with open('../source/words_dictionary.json') as f:
+with open('../source/words_dictionary.json', 'r') as f:
      word_map = json.load(f)
 
 print('Reading previous word map length')
@@ -76,8 +76,6 @@ print('Cleaning text of special symbols')
 # symbols = ['.', ',', '$', '%', '&', ':', ';', '(', ')', '!', '/']
 cleaned_text_list = []
 for item in no_num_text:
-    print(item)
-    print(('.' or ',' or '$' or '%' or '&' or ':' or ';' or '(' or ')' or '!' or '/') not in item)
     if ('.' or ',' or '$' or '%' or '&' or ':' or ';' or '(' or ')' or '!' or '/') not in item: 
         cleaned_text_list.append(item)
 
@@ -89,6 +87,15 @@ for item in cleaned_text_list:
 
 # calculate nearest perfect square, add placeholder to fill
 root, final_list = makePerfectSquareList(lowercase_list)
+
+# create our square grid based on the given root value
+grid = []
+for _ in range(root):
+    grid.append([])
+
+for cell in grid:
+    for _ in range(root):
+        cell.append([])
 
 # Initialize game
 pygame.init()
@@ -102,8 +109,28 @@ running = True
 square_width = 10
 square_height = 10
 
+# while running:
+#     sq_Rect = pygame.Rect((0, 0), (10, 10))
+
+#     # TODO: build screen
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             running = False
+
+#     screen.fill((255, 255, 255))
+
+#     for item in final_list:
+#         color_code = word_map.setdefault(item, '#000000')
+#         color = pygame.Color(color_code)
+#         square = pygame.draw.rect(screen, color, sq_Rect)
+#         sq_Rect = sq_Rect.move(square_width, 0)
+
+#     pygame.display.flip()
+# pygame.quit()
+
 while running:
     sq_Rect = pygame.Rect((0, 0), (10, 10))
+    word_index = 0
 
     # TODO: build screen
     for event in pygame.event.get():
@@ -112,11 +139,17 @@ while running:
 
     screen.fill((255, 255, 255))
 
-    for item in final_list:
-        color_code = word_map.setdefault(item, '#000000')
-        color = pygame.Color(color_code)
-        square = pygame.draw.rect(screen, color, sq_Rect)
-        sq_Rect = sq_Rect.move(square_width, 0)
+    for i in range(root):
+        # y_rect = sq_Rect.move(0, i*10)
+        y_cord = i*10
+        for j in range(root):
+            # x_rect = sq_Rect.move(j*10, 0)
+            x_cord = j*10
+            color_code = word_map.setdefault(final_list[word_index], '#000000')
+            color = pygame.Color(color_code)
+            square = pygame.draw.rect(screen, color, pygame.Rect((x_cord, y_cord), (10, 10)))
+
+            word_index += 1
 
     pygame.display.flip()
 pygame.quit()
