@@ -26,7 +26,33 @@ def makePerfectSquareList(text_list):
 
 random.seed(1)
 
-# TODO: initialize by loading desired files
+print('Importing source text')
+with open('../source/text.txt', 'r', encoding='utf-8') as f:
+    text_file = f.read()
+# remove any numeric values from text (i.e. 1, 12, etc)
+print('Cleaning text of numbers')
+text_list = text_file.split()
+no_num_text = []
+for item in text_list:
+    try:
+        int(item)
+    except:
+        no_num_text.append(item)
+
+# remove any symbols from text (i.e. $, %, &, etc)
+print('Cleaning text of special symbols')
+# symbols = ['.', ',', '$', '%', '&', ':', ';', '(', ')', '!', '/']
+cleaned_text_list = []
+for item in no_num_text:
+    if ('.' or ',' or '$' or '%' or '&' or ':' or ';' or '(' or ')' or '!' or '/' or '-' or '_') not in item: 
+        cleaned_text_list.append(item)
+
+# make all words lowercase
+lowercase_list = []
+for item in cleaned_text_list:
+    lowercase_list.append(item.lower())
+
+# initialize by loading desired files
 print('Importing word map')
 with open('../source/words_dictionary.json', 'r') as f:
      word_map = json.load(f)
@@ -46,43 +72,18 @@ if len(word_map) > int(previous_word_map_len):
     for key, value in tqdm(word_map.items()):
         make_hex = True
         while make_hex:
-            random_num = random.randint(0, 16777215)
-            hex_number = str(hex(random_num))
-            hex_number = '#' + hex_number[2:]
-            if(hex_number not in used_hexes):
-                word_map[key] = hex_number
-                used_hexes.append(hex_number)
+            r = random.randint(0, 255)
+            g = random.randint(0, 255)
+            b = random.randint(0, 255)
+            hex_code = '#%02x%02x%02x' % (r, g, b)
+            if(hex_code not in used_hexes):
+                word_map[key] = hex_code
+                used_hexes.append(hex_code)
                 make_hex = False
         
     print('Updating length records')
     with open('../source/map_length.txt', 'w') as f:
         f.write(str(len(word_map)))
-
-print('Importing source text')
-with open('../source/text.txt') as f:
-    text_file = f.read()
-# remove any numeric values from text (i.e. 1, 12, etc)
-print('Cleaning text of numbers')
-text_list = text_file.split()
-no_num_text = []
-for item in text_list:
-    try:
-        int(item)
-    except:
-        no_num_text.append(item)
-
-# remove any symbols from text (i.e. $, %, &, etc)
-print('Cleaning text of special symbols')
-# symbols = ['.', ',', '$', '%', '&', ':', ';', '(', ')', '!', '/']
-cleaned_text_list = []
-for item in no_num_text:
-    if ('.' or ',' or '$' or '%' or '&' or ':' or ';' or '(' or ')' or '!' or '/') not in item: 
-        cleaned_text_list.append(item)
-
-# make all words lowercase
-lowercase_list = []
-for item in cleaned_text_list:
-    lowercase_list.append(item.lower())
 
 # calculate nearest perfect square, add placeholder to fill
 root, final_list = makePerfectSquareList(lowercase_list)
@@ -91,13 +92,18 @@ root, final_list = makePerfectSquareList(lowercase_list)
 pygame.init()
 
 # Set display size in pixels
-screen = pygame.display.set_mode([500, 500])
+# screen = pygame.display.set_mode([500, 500])
+screen_width = 500
+screen_height = 500
+screen = pygame.display.set_mode([screen_width, screen_height], pygame.RESIZABLE)
 
 # Activate Run Loop
 running = True
 
-square_width = 10
-square_height = 10
+# square_width = 10
+# square_height = 10
+square_width = screen_width / root
+square_height = screen_height / root
 
 while running:
     word_index = 0
@@ -106,6 +112,11 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.VIDEORESIZE:
+            old_screen = screen
+            screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+            screen.blit(old_screen, (0, 0))
+            del old_screen
 
     screen.fill((255, 255, 255))
 
