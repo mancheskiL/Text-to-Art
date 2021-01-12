@@ -108,7 +108,7 @@ square_height = screen_height / root
 while running:
     word_index = 0
 
-    # TODO: build screen
+    # build screen
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
