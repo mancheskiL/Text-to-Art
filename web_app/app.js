@@ -18,10 +18,24 @@ const makePerfectSquareList = function (textArray) {
   return [value, outputArray];
 };
 
-const cleanInput = function () {
+const analyze = function () {
   const rawInput = document.getElementById("input-text").value;
   const allLower = rawInput.toLowerCase();
   const inputAsArray = allLower.split(" ");
+  const noNumbers = [];
+  const noSymbols = [];
 
   console.log("Cleaning text of numbers");
+  for (let i = 0; i < inputAsArray.length; i++) {
+    if (!isNaN(parseInt(inputAsArray[i]))) {
+      noNumbers.push(inputAsArray[i]);
+    }
+  }
+
+  console.log("Cleaning text of special symbols");
+  for (let i = 0; i < noNumbers.length; i++) {
+    if (noNumbers[i].search(/[.|,|$|%|&|:|;|(|)|!|-|_]/g) === -1) {
+      noSymbols.push(noNumbers[i]);
+    }
+  }
 };
