@@ -27,7 +27,7 @@ const analyze = function () {
 
   console.log("Cleaning text of numbers");
   for (let i = 0; i < inputAsArray.length; i++) {
-    if (!isNaN(parseInt(inputAsArray[i]))) {
+    if (isNaN(parseInt(inputAsArray[i]))) {
       noNumbers.push(inputAsArray[i]);
     }
   }
