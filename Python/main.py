@@ -54,7 +54,7 @@ for item in cleaned_text_list:
 
 # initialize by loading desired files
 print('Importing word map')
-with open('../source/words_dictionary.json', 'r') as f:
+with open('../source/words_dictionary.json', 'r', encoding='utf-8') as f:
      word_map = json.load(f)
 
 print('Reading previous word map length')

@@ -25,6 +25,7 @@ const analyze = function () {
   const noNumbers = [];
   const noSymbols = [];
 
+  // remove any number strings
   console.log("Cleaning text of numbers");
   for (let i = 0; i < inputAsArray.length; i++) {
     if (isNaN(parseInt(inputAsArray[i]))) {
@@ -32,10 +33,30 @@ const analyze = function () {
     }
   }
 
+  // remove any words that contain symbols
   console.log("Cleaning text of special symbols");
   for (let i = 0; i < noNumbers.length; i++) {
     if (noNumbers[i].search(/[.|,|$|%|&|:|;|(|)|!|-|_]/g) === -1) {
       noSymbols.push(noNumbers[i]);
     }
   }
+
+  // need to get this file with ajax call to webserver
+  console.log("Importing word map");
+  let wordMap = null;
+  // const request = axios.get("http://192.168.178.43:8000/automation");
+  const request = axios({
+    method: "get",
+    // port must be the same as locahost port!
+    url: "http://192.168.178.43:8080/automation",
+    headers: {
+      accept: "application/json",
+    },
+  });
+  request.then((response) => {
+    // wordMap = JSON.parse(response.data);
+    wordMap = response.data;
+    // console.log(wordMap["a"]);
+  });
+  console.log(wordMap);
 };
