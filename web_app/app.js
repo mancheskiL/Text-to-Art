@@ -43,7 +43,6 @@ const analyze = function () {
 
   // need to get this file with ajax call to webserver
   console.log("Importing word map");
-  let wordMap = null;
   // const request = axios.get("http://192.168.178.43:8000/automation");
   const request = axios({
     method: "get",
@@ -54,9 +53,11 @@ const analyze = function () {
     },
   });
   request.then((response) => {
-    // wordMap = JSON.parse(response.data);
     wordMap = response.data;
-    // console.log(wordMap["a"]);
+    console.log(wordMap);
+    // must fulfill all tasks requiring wordMap in this block
+    // cannot save values outside of block because code executes outside
+    // the block immediately while waiting for i/o
+    // should write function to keep this part clean
   });
-  console.log(wordMap);
 };
