@@ -61,4 +61,3 @@ const analyze = function () {
     // should write function to keep this part clean
   });
 };
-// test
